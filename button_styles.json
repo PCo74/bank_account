@@ -1,0 +1,18 @@
+{
+    "create": {
+        "color": "teal",
+        "icon": "pencil-plus"
+    },
+    "update": {
+        "color": "cyan",
+        "icon": "pencil-check"
+    },
+    "delete": {
+        "color": "pink",
+        "icon": "trash"
+    },
+    "cancel": {
+        "color": "yellow",
+        "icon": "cancel"
+    }
+}

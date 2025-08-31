@@ -1,0 +1,53 @@
+{
+    "app_title": "La Banque Postale",
+    "language": "fr-FR",
+    "dark_theme": false,
+    "action": "✨",
+    "no_data": "Aucune donnée !",
+    "mvt": {
+        "performed": "Réalisé",
+        "label": "Libellé",
+        "amount": "Montant",
+        "support": "Support",
+        "validated": "Validé",
+        "support_id": "Support"
+    },
+    "support": {
+        "name": "Nom"
+    },
+    "mvts_pending": {
+        "title": "MVTs en attente"
+    },
+    "mvts_validated": {
+        "title": "MVTs validés"
+    },
+    "mvts_purge": {
+        "title": "MVTs à purger",
+        "date": "Purger avant le"
+    },
+    "supports": {
+        "title": "Supports"
+    },
+    "actions": {
+        "edit": "Éditer",
+        "delete": "Supprimer",
+        "create": "Ajouter",
+        "update": "Modifier",
+        "cancel": "Annuler",
+        "search": "Rechercher…",
+        "validate": "Valider",
+        "invalidate": "invalider"
+    },
+    "balance": {
+        "current": "solde réel",
+        "bank": "solde banque"
+    },
+    "parameter": {
+        "title": "Paramètres",
+        "report": "Report",
+        "last_statement": "Dernier relevé",
+        "dec_sep": "Séparateur décimal",
+        "dec_nb": "Nb de décimales",
+        "currency": "Devise"
+    }
+}
