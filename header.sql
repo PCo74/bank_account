@@ -36,17 +36,19 @@ SET menu_items = json_set($menu_items, '$[' || $i_active || '].active', true);
 
 SELECT 
     'shell'             AS component,
+    -- bank illustration change !
     'assets/bank.jpg'   AS image,
     'assets/bank.ico'   AS favicon,
+    -- choice of the 'dark' theme or nothing
+    'dark'              AS theme,
+
     $t->>'app_title'    AS title,
-    "©PCo2025 with [SQLPage](https://sql-page.com)" 
-                        AS footer,
     "/mvts"             AS link,
     "/assets/perso.css" AS css,
     $t->>'language'     AS language,
-    IIF($t->>'dark_theme', 'dark', '') AS theme,
-    --"dark"              AS theme,
-    JSON($menu_items)   AS menu_item;
+    JSON($menu_items)   AS menu_item,
+    "©PCo2025 with [SQLPage](https://sql-page.com)" 
+                        AS footer;
 
 -- BALANCE & LAST STATEMENT
 
