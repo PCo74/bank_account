@@ -1,5 +1,5 @@
 -- SQL ACTION
-
+/*
 UPDATE parameters
 SET report = report + (
     SELECT IFNULL(sum(amount), 0)
@@ -14,21 +14,10 @@ WHERE $action = 'delete'
     AND validated IS NOT NULL
     AND validated < $purge_date
 RETURNING 'redirect' AS component, '?purge_date=' || $purge_date AS link;
-
--- YOUR TRANSLATION & MENU
-
-SET t = sqlpage.read_file_as_text('text.json');
-
-SELECT 'dynamic' AS component,
-    sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'i_active', 2)) AS properties;
-
-SELECT 
-    'divider' as component,
-    $t->'mvts_purge'->>'title' as contents;
+*/
 
 -- PARAMETERS
-
+/*
 SET p = SELECT json_object(
             'report', report,
             'last_statement', last_statement,
@@ -37,15 +26,16 @@ SET p = SELECT json_object(
             'money_format', money_format
         )
         FROM parameters;
+*/
 
--- A form to create a new entry in the database
+-- FORM
 
-SET purge_date = COALESCE($purge_date, :purge_date, date('now', 'localtime'));
+SET purge_date = COALESCE($purge_date, :purge_date, date('now', 'start of month', '-4 month'));
 
 SELECT
     'form' AS component,
-    'form_purge_date' as id,
-    TRUE as auto_submit;
+    --'form_purge_date' AS id,
+    TRUE AS auto_submit;
 
 SELECT
     'purge_date' AS name,
@@ -84,7 +74,13 @@ WHERE validated IS NOT NULL AND validated < $purge_date;
 
 -- VALIDATE BUTTON
 
-SET action_link = CONCAT('?purge_date=', $purge_date, '&action=', 'delete');
+SET action_link = CONCAT(
+    'mvts_actions?no=', $no,
+    '&purge_date=', $purge_date,
+    '&action=', 'purge');
+/*SET return_link = CONCAT(
+    'index?no=', $no,
+    '&purge_date=', $purge_date);*/
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('form_buttons.sql',
@@ -93,4 +89,4 @@ SELECT 'dynamic' AS component,
             'form_name', '',
             'action_link', $action_link,
             'action', 'delete',
-            'return_link', 'mvts')) AS properties;
+            'return_link', 'index?no=0')) AS properties;

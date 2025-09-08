@@ -1,11 +1,13 @@
--- YOUR TRANSLATION & HEADER
-
+-- YOUR TRANSLATION & MENU
+/*
 SET t = sqlpage.read_file_as_text('text.json');
+SET mc = sqlpage.read_file_as_text('money_colors.json');
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'i_active', 3)) AS properties;
+    json_object('t', $t, 'mc', $mc, 'i_active', 3)) AS properties;
 
+*/
 -- FORM DATA
 
 SET id = IIF($id, $id, ''); -- id == '' for new insert
@@ -16,7 +18,8 @@ SET record = (
     SELECT 
     json_object(
         'id', id,
-        'name', name
+        'name', name,
+        'sign', sign
         )
     FROM supports
     WHERE id=$id);
@@ -33,10 +36,22 @@ SELECT
     $t->>'support'->>'name' AS label,
     $record->>'name' AS value,
     TRUE AS required;
+SELECT
+    'sign' AS name,
+    $record->>'sign' AS value,
+    'select' AS type,
+    '[{"label": "-", "value": "-"}, {"label": "+", "value": "+"}]'
+            AS options;
+
 
 -- ACTION BUTTONS
 
-SET action_link = CONCAT('supports_actions?id=', $id, '&action=', $action);
+SET action_link = CONCAT(
+    'supports_actions?no=', $no,
+    '&id=', $id,
+    '&action=', $action);
+SET return_link = CONCAT(
+    'index?no=', $no);
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('form_buttons.sql',
@@ -45,21 +60,22 @@ SELECT 'dynamic' AS component,
             'form_name', 'support',
             'action_link', $action_link,
             'action', $action,
-            'return_link', 'supports')) AS properties;
+            'return_link', $return_link)) AS properties;
 
 -- TABLE
 
 SET actions = format(
-    "[✎](?id=%s&action=update '%s') &nbsp;
-     [✘](?id=%s&action=delete '%s')",
-     '%s', CONCAT($t->>'edit','…'),
-     '%s', CONCAT($t->>'delete','…')
+    "[✎](index?no=%s&id=%s&action=update '%s') &nbsp;
+     [✘](index?no=%s&id=%s&action=delete '%s')",
+     $no, '%s', CONCAT($t->>'edit','…'),
+     $no, '%s', CONCAT($t->>'delete','…')
      );
 
 SELECT 
     'table'             AS component,
     json_array(
         $t->'support'->>'name',
+        $t->'support'->>'sign',
         $t->'action')   AS col_labels,
     'action'            AS markdown,
     'action'            AS align_center,
@@ -71,5 +87,6 @@ SELECT
     
 SELECT
     name,
+    sign,
     format($actions, id, id, id) AS action
 FROM supports;

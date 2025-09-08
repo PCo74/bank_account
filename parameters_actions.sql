@@ -8,14 +8,17 @@ SET
     dec_nb = :dec_nb,
     currency = :currency
 WHERE $action = 'update'
-RETURNING 'redirect' AS component, 'parameters' AS link
+RETURNING 'redirect' AS component, 'index?no=0' AS link
 
-select 
-    'alert'              as component,
-    'Erreur'              as title,
-    '«**' || $action || '**» : action inconnue !' as description_md,
-    'alert-circle'       as icon,
-    'red'                as color;
-select 
-    'mvts'       as link,
-    'Retourner aux mouvements' as title;
+-- UPDATE_LAST_STATEMENT
+
+UPDATE parameters
+SET
+    last_statement = :last_statement
+WHERE $action= 'update_last_statement'
+RETURNING 'redirect' AS component, 'index?no=0' AS link
+
+-- ERROR
+
+SELECT 'dynamic' AS component,
+    sqlpage.run_sql('error.sql') AS properties;

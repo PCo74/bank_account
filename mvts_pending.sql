@@ -1,29 +1,9 @@
--- YOUR TRANSLATION & MENU
-
-SET t = sqlpage.read_file_as_text('text.json');
-
-SELECT 'dynamic' AS component,
-    sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'i_active', 0)) AS properties;
-
-SELECT 
-    'divider' as component,
-    $t->'mvts_pending'->>'title' AS contents;
-
--- PARAMETERS
-
-SET p = SELECT json_object(
-            'report', report,
-            'last_statement', last_statement,
-            'dec_sep', dec_sep,
-            'step', step,
-            'money_format', money_format
-        )
-        FROM parameters;
-
 -- FORM DATA
 
-SET id = IIF($id, $id, '');
+--SELECT 'dynamic' AS component, sqlpage.run_sql('error.sql') AS properties;
+
+
+SET id = IFNULL($id, '');
 
 SET action = IIF($action IN ('create', 'update', 'delete'),
              $action, 'create');
@@ -84,7 +64,7 @@ FROM supports;
 
 -- VALIDATE BUTTON
 
-SET action_link = CONCAT('mvts_actions?id=', $id, '&action=', $action);
+SET action_link = CONCAT('mvts_actions?no=', $no, '&id=', $id, '&action=', $action);
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('form_buttons.sql',
@@ -93,14 +73,14 @@ SELECT 'dynamic' AS component,
             'form_name', 'mvt',
             'action_link', $action_link,
             'action', $action,
-            'return_link', 'mvts')) AS properties;
+            'return_link', 'index?no=0')) AS properties;
 
 -- TABLE MVTS
 
 SET actions = format(
-    "[✎](?id=%s&action=update '%s') &nbsp;
-     [✘](?id=%s&action=delete '%s') &nbsp;
-     [✅](mvts_actions?id=%s&action=validate '%s')",
+    "[✎](?no=0&id=%s&action=update '%s') &nbsp;
+     [✘](?no=0&id=%s&action=delete '%s') &nbsp;
+     [✔](mvts_actions?no=0&id=%s&action=validate '%s')",
      '%s', CONCAT($t->'actions'->>'edit','…'),
      '%s', CONCAT($t->'actions'->>'delete','…'),
      '%s', $t->>'actions'->>'validate');
@@ -129,9 +109,6 @@ SELECT
         '.', $p->>'dec_sep') AS money,
     name,
     format($actions, M.id, M.id, M.id) AS action,
-    IIF(amount < 0, 'orange', 'green') as _sqlpage_color
+    IIF(amount < 0, $mc->>'debit', $mc->>'credit') AS _sqlpage_color
 FROM mvts M INNER JOIN supports S ON M.support_id = S.id
 WHERE validated IS NULL;
-
-
---select $t;

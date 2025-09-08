@@ -1,3 +1,7 @@
 INSERT
-INTO supports(id, name)
-VALUES (NULL, "CB");
+INTO supports(name, sign)
+VALUES 
+    ('CB', '-'),
+    ('CHQ', '-'),
+    ('PRE', '-'),
+    ('VIR', '+');

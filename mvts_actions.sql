@@ -1,22 +1,8 @@
--- CREATE / UPDATE / DELETE / + VALIDATE / INVALIDATE
+-- CREATE / UPDATE / DELETE / VALIDATE / INVALIDATE / PURGE
 
-DELETE FROM mvts
-WHERE id = $id and $action = 'delete'
-RETURNING 'redirect' AS component, 'mvts.sql' AS link
+SET return_link = "index?no=" || $no;
 
-UPDATE mvts
-SET
-    validated = NULL
-WHERE id = $id and $action = 'invalidate'
-RETURNING 'redirect' AS component, 'mvts_validated' AS link
-
-SET last_statement = SELECT last_statement from parameters;
-UPDATE mvts
-SET
-    validated = IIF(performed > $last_statement, performed, $last_statement)
-WHERE id = $id and $action = 'validate'
---AND performed <= $last_statement
-RETURNING 'redirect' AS component, 'mvts.sql' AS link
+-- CREATE/UPDATE
 
 INSERT OR REPLACE
 INTO mvts(id, performed, label, amount, support_id)
@@ -24,22 +10,51 @@ SELECT
     (case when $id='' then NULL else $id end),
     :performed,
     :label, 
-    :amount,
+    IIF(:amount > 0 AND :support_id <> 4, -:amount, :amount),
     :support_id
 WHERE $action = 'create' OR $action='update'
-RETURNING 'redirect' AS component, 'mvts.sql' AS link;
+RETURNING 'redirect' AS component, $return_link AS link;
 
---SET action = IIF($action IN ('create', 'update', 'delete'), $action, 'create');
+-- DELETE
 
-select 
-    'alert'              as component,
-    'Erreur'              as title,
-    CASE $action
-        WHEN 'validate' THEN "Date de validation non valide !!!"
-        ELSE '«**' || $action || '**» : action inconnue !'
-        END as description_md,
-    'alert-circle'       as icon,
-    'red'                as color;
-select 
-    'mvts.sql'       as link,
-    'Retourner aux mouvements' as title;
+DELETE FROM mvts
+WHERE id = $id and $action = 'delete'
+RETURNING 'redirect' AS component, $return_link AS link
+
+-- INVALIDATE
+
+UPDATE mvts
+SET
+    validated = NULL
+WHERE id = $id and $action = 'invalidate'
+RETURNING 'redirect' AS component, $return_link AS link
+
+-- VALIDATE
+
+SET last_statement = SELECT last_statement from parameters;
+UPDATE mvts
+SET
+    validated = IIF(performed > $last_statement, performed, $last_statement)
+WHERE id = $id and $action = 'validate'
+RETURNING 'redirect' AS component, $return_link AS link
+
+-- PURGE (TODO transaction ?)
+
+UPDATE parameters
+SET report = report + (
+    SELECT IFNULL(sum(amount), 0)
+    FROM mvts
+    WHERE $action = 'purge'
+        AND validated IS NOT NULL 
+        AND validated < $purge_date
+    );
+DELETE FROM mvts
+WHERE $action = 'purge'
+    AND validated IS NOT NULL
+    AND validated < $purge_date
+RETURNING 'redirect' AS component, $return_link AS link;
+
+-- ERROR
+
+SELECT 'dynamic' AS component,
+    sqlpage.run_sql('error.sql') AS properties;

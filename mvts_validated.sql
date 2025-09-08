@@ -1,17 +1,15 @@
 -- YOUR TRANSLATION & MENU
-
+/*
 SET t = sqlpage.read_file_as_text('text.json');
+SET mc = sqlpage.read_file_as_text('money_colors.json');
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'i_active', 1)) AS properties;
-
-SELECT 
-    'divider' as component,
-    $t->'mvts_validated'->>'title'   as contents;
+    json_object('t', $t, 'mc', $mc, 'i_active', 1)) AS properties;
+*/
 
 -- PARAMETERS
-
+/*
 SET p = SELECT json_object(
             'report', report,
             'last_statement', last_statement,
@@ -20,11 +18,11 @@ SET p = SELECT json_object(
             'money_format', money_format
         )
         FROM parameters;
-
+*/
 -- TABLE MVTS VALIDATED
 
 SET actions = format(
-    "[❎](mvts_actions?id=%s&action=invalidate '%s')",
+    "[❗](mvts_actions?no=2&id=%s&action=invalidate '%s')",
      '%s', $t->'actions'->>'invalidate');
 
 select 

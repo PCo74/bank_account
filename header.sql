@@ -1,36 +1,39 @@
---> $t : Translation Texts
-    -- SET t = sqlpage.read_file_as_text('text.json');
---> $i_active : active menu index
-    -- SET i_active = 1;
+/**
+ * set menu and global configuration
+ * display balances and last statement date
+ *
+ * @param {json} $t : translation texts
+ * @param {int} $no : active menu index
+ */
 
 -- MENU BAR
 
 SET menu_items = json_array(
     json_object(
         "title", $t->"mvts_pending"->>"title",
-        "link", "mvts"
+        "link", "index?no=0"
     ),
     json_object(
         "title", $t->"mvts_validated"->>"title",
-        "link", "mvts_validated"
+        "link", "index?no=1"
     ),
-            json_object(
+    json_object(
         "title", $t->"mvts_purge"->>"title",
-        "link", "mvts_purge"
+        "link", "index?no=2"
     ),
-        json_object(
+    json_object(
         "title", $t->"supports"->>"title",
-        "link", "supports"
+        "link", "index?no=3"
     ),
-            json_object(
+    json_object(
         "title", $t->"parameter"->>"title",
-        "link", "parameters"
+        "link", "index?no=4"
     )
 );
 
 -- ACTIVE MENU
 
-SET menu_items = json_set($menu_items, '$[' || $i_active || '].active', true);
+SET menu_items = json_set($menu_items, '$[' || $no|| '].active', true);
 
 -- SHELL
 
@@ -40,17 +43,12 @@ SELECT
     'assets/bank.jpg'   AS image,
     'assets/bank.ico'   AS favicon,
     -- choice of the 'dark' theme or nothing
-    'dark'              AS theme,
+    -- 'dark'              AS theme,
 
     $t->>'app_title'    AS title,
-    "/mvts"             AS link,
+    "/"                 AS link,
     "/assets/perso.css" AS css,
     $t->>'language'     AS language,
     JSON($menu_items)   AS menu_item,
     "©PCo2025 with [SQLPage](https://sql-page.com)" 
                         AS footer;
-
--- BALANCE & LAST STATEMENT
-
-SELECT 'dynamic' AS component,
-    sqlpage.run_sql('balance.sql') AS properties;

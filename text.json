@@ -34,8 +34,8 @@
         "update": "Modifier",
         "cancel": "Annuler",
         "search": "Rechercher…",
-        "validate": "Valider",
-        "invalidate": "invalider"
+        "validate": "À valider",
+        "invalidate": "Invalider"
     },
     "balance": {
         "current": "solde réel",

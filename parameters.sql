@@ -1,11 +1,13 @@
--- YOUR TRANSLATION & HEADER
-
+-- YOUR TRANSLATION & MENU
+/*
 SET t = sqlpage.read_file_as_text('text.json');
+SET mc = sqlpage.read_file_as_text('money_colors.json');
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'i_active', 4)) AS properties;
+    json_object('t', $t, 'mc', $mc, 'i_active', 4)) AS properties;
 
+*/
 -- FORM DATA
 
 SET p = SELECT 
@@ -57,7 +59,9 @@ SELECT
 
 -- VALIDATE BUTTON
 
-SET action_link = CONCAT('parameters_actions?action=', 'update');
+SET action_link = CONCAT(
+    'parameters_actions?no=', $no,
+    '&action=update');
 
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('form_buttons.sql',
@@ -66,4 +70,4 @@ SELECT 'dynamic' AS component,
             'form_name', 'form_id',
             'action_link', $action_link,
             'action', 'update',
-            'return_link', 'mvts')) AS properties;
+            'return_link', 'index?no=4')) AS properties;
