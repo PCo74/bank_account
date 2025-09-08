@@ -1,4 +1,4 @@
---select 'text' as component, sqlpage.path() as contents;
+-- ERROR PAGE --
 
 select 
     'alert'              as component,
