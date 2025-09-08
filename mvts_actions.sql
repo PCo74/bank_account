@@ -4,13 +4,16 @@ SET return_link = "index?no=" || $no;
 
 -- CREATE/UPDATE
 
+SET sign = (SELECT sign FROM supports WHERE id = $support_id);
+
 INSERT OR REPLACE
 INTO mvts(id, performed, label, amount, support_id)
 SELECT
     (case when $id='' then NULL else $id end),
     :performed,
-    :label, 
-    IIF(:amount > 0 AND :support_id <> 4, -:amount, :amount),
+    :label,
+    $sign || ABS(:amount),
+    --IIF(:amount > 0 AND $sign = '-', -:amount, :amount),
     :support_id
 WHERE $action = 'create' OR $action='update'
 RETURNING 'redirect' AS component, $return_link AS link;
