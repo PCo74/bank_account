@@ -2,6 +2,9 @@
 
 > Visualisation des soldes réel et bancaire
 
+![mvts pending](screenshots/mvts_pending.png)
+
+
 ## Installation
 
 - nécessite
