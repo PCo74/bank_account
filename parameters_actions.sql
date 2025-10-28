@@ -1,16 +1,17 @@
+-- TABLE PARAMETERS ACTIONS
+
 -- UPDATE
 
 UPDATE parameters
 SET
     report = :report,
     last_statement = :last_statement,
-    dec_sep = :dec_sep,
-    dec_nb = :dec_nb,
-    currency = :currency
+    dark_theme = IIF(:dark_theme="",1,0),
+    search_area = IIF(:search_area="",1,0)
 WHERE $action = 'update'
 RETURNING 'redirect' AS component, 'index?no=0' AS link
 
--- UPDATE_LAST_STATEMENT
+-- UPDATE LAST STATEMENT
 
 UPDATE parameters
 SET

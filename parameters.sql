@@ -1,73 +1,46 @@
--- YOUR TRANSLATION & MENU
-/*
-SET t = sqlpage.read_file_as_text('text.json');
-SET mc = sqlpage.read_file_as_text('money_colors.json');
+-- global $p : parameters as json
+-- global $t : translation texts as json
+-- global $c : application constants as json
 
-SELECT 'dynamic' AS component,
-    sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'mc', $mc, 'i_active', 4)) AS properties;
+-- DATA FORM
 
-*/
--- FORM DATA
-
-SET p = SELECT 
-    json_object(
-        'report', report,
-        'last_statement', last_statement,
-        'dec_sep', dec_sep,
-        'dec_nb', dec_nb,
-        'step', step,
-        'currency', currency,
-        'money_format', money_format
-        ) FROM parameters;
+SET action = 'update';
+SET tp = $t->'parameters';
+SET form_id = 'parameters';
 
 -- FORM
 
 SELECT
     'form' AS component,
-    'form_id' as id,
-    '' as validate;
+    $form_id AS id,
+    '' AS validate;
 
 SELECT
-    'report'                AS name,
-    'report'                AS label,
-    $p->>'report'           AS value,
-    'number'                AS type,
-    $p->>'step'             AS step;
+    'report'                        AS name,
+    $tp->>'report'                  AS label,
+    $p->>'report'                   AS value,
+    'number'                        AS type,
+    $c->>'number_step'              AS step;
 
 SELECT
-    'last_statement'        AS name,
-    'dernier relevé'        AS label,
-    $p->>'last_statement'   AS value,
-    'date'                  AS type;
+    'last_statement'                AS name,
+    $tp->>'last_statement'          AS label,
+    'date'                          AS type,
+    $p->>'last_statement'           AS value;
 
 SELECT
-    'dec_sep'               AS name,
-    'séparateur décimal'    AS label,
-    $p->>'dec_sep'          AS value;
+    'dark_theme'                    AS name,
+    'switch'                        AS type,    
+    CONCAT('🌓 ', $tp->>'dark_theme')      AS label,
+    $p->>'dark_theme'               AS checked;
 
 SELECT
-    'dec_nb'                AS name,
-    'nb de décimales'       AS label,
-    $p->>'dec_nb'           AS value,
-    'number'                AS type;
+    'search_area'                   AS name,
+    'switch'                        AS type,   
+    CONCAT('🔍 ', $tp->>'search_area') AS label,
+    $p->>'search_area'              AS checked;
 
-SELECT
-    'currency'              AS name,
-    'devise'                AS label,
-    $p->>'currency'         AS value;
-
--- VALIDATE BUTTON
-
-SET action_link = CONCAT(
-    'parameters_actions?no=', $no,
-    '&action=update');
+-- BUTTONS FORM
 
 SELECT 'dynamic' AS component,
-    sqlpage.run_sql('form_buttons.sql',
-        json_object(
-            't', $t,
-            'form_name', 'form_id',
-            'action_link', $action_link,
-            'action', 'update',
-            'return_link', 'index?no=4')) AS properties;
+    sqlpage.run_sql('buttons_form.sql') AS properties;

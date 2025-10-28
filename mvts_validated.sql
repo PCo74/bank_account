@@ -1,24 +1,7 @@
--- YOUR TRANSLATION & MENU
-/*
-SET t = sqlpage.read_file_as_text('text.json');
-SET mc = sqlpage.read_file_as_text('money_colors.json');
+-- DATA SETUP
 
-SELECT 'dynamic' AS component,
-    sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'mc', $mc, 'i_active', 1)) AS properties;
-*/
+SET mc = $c->'money_colors';
 
--- PARAMETERS
-/*
-SET p = SELECT json_object(
-            'report', report,
-            'last_statement', last_statement,
-            'dec_sep', dec_sep,
-            'step', step,
-            'money_format', money_format
-        )
-        FROM parameters;
-*/
 -- TABLE MVTS VALIDATED
 
 SET actions = format(
@@ -27,30 +10,24 @@ SET actions = format(
 
 select 
     'table' AS component,
-    json_array(
-        $t->'mvt'->>'performed',
-        $t->'mvt'->>'label',
-        $t->'mvt'->>'amount',
-        $t->'mvt'->>'support_id',
-        $t->'mvt'->>'validated',
-        $t->'action') AS col_labels,
-    'action' AS markdown, 
-    'money' AS align_right,
-    'action' AS align_center,
-    $t->>'no_data' AS empty_description,
+    $t->>'action' AS markdown, 
+    $t->>'action' AS align_right,
+    $t->'mvt'->>'amount' AS money,
+    $t->'mvt'->>'amount' AS align_right,
     TRUE AS sort,
     TRUE AS freeze_headers,
-    TRUE AS search,
-    $t->'actions'->>'search' AS search_placeholder;
+    $p->>'search_area' AS search,
+    $t->>'no_data' AS empty_description,
+    $t->>'search' || '…' AS search_placeholder;
     
-SELECT
-    performed,
-    label,
-    replace(format($p->>'money_format', amount),
-        '.', $p->>'dec_sep') AS money,
-    name,
-    M.validated,
-    format($actions, M.id) AS action,
-    IIF(amount < 0, 'orange', 'green') as _sqlpage_color
-FROM mvts M INNER JOIN supports S ON M.support_id = S.id
-WHERE validated IS NOT NULL;
+SELECT 'dynamic' AS component,
+    json_group_array(json_object(
+    $t->'mvt'->>'performed', performed,
+    $t->'mvt'->>'label', label,
+    $t->'mvt'->>'amount', amount,
+    $t->'mvt'->>'support_id', name,
+    $t->'mvt'->>'validated', validated,
+    $t->>'action', format($actions, id, id, id),
+    '_sqlpage_color', IIF(amount < 0, $mc->>'debit', $mc->>'credit')
+    )) AS properties
+FROM mvts_supports_validated;

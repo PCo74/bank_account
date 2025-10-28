@@ -1,0 +1,36 @@
+{
+    "number_step": 0.01,
+
+    "pages": [
+        "mvts_pending",
+        "mvts_validated",
+        "mvts_purge",
+        "supports",
+        "parameters",
+        "form_last_statement"
+    ],
+
+    "money_colors": {
+        "debit": "orange",
+        "credit": "cyan"
+    },
+    
+    "button_styles": {
+        "create": {
+            "color": "teal",
+            "icon": "pencil-plus"
+        },
+        "update": {
+            "color": "cyan",
+            "icon": "pencil-check"
+        },
+        "delete": {
+            "color": "pink",
+            "icon": "trash"
+        },
+        "cancel": {
+            "color": "yellow",
+            "icon": "cancel"
+        }
+    }
+}

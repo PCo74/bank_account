@@ -1,34 +1,39 @@
--- YOUR TRANSLATION & MENU
-/*
-SET t = sqlpage.read_file_as_text('text.json');
-SET mc = sqlpage.read_file_as_text('money_colors.json');
+-- GLOBAL DATA
 
-SELECT 'dynamic' AS component,
-    sqlpage.run_sql('header.sql',
-    json_object('t', $t, 'mc', $mc, 'i_active', 3)) AS properties;
+-- $c : application constants as json
+-- $p : parameters as json
+-- $t : translation texts as json
 
-*/
--- FORM DATA
 
-SET id = IIF($id, $id, ''); -- id == '' for new insert
+-- MORE DATA SETUP
 
-SET action = IIF($action IN ('create', 'update', 'delete'), $action, 'create');
+SET action = IIF($action IN ('create', 'update', 'delete'),
+             $action, 'create');
+SET form_id = 'supports';
 
-SET record = (
-    SELECT 
-    json_object(
+SET record =
+    SELECT json_object(
         'id', id,
         'name', name,
         'sign', sign
-        )
+    )
     FROM supports
-    WHERE id=$id);
+    WHERE id=$id;
+
+SET options = 
+    SELECT json_group_array(
+        json_object(
+            'label', value,
+            'value', value  
+        ) 
+    )
+    FROM json_each(json_array('-', '+'));
 
 -- FORM
 
 SELECT
     'form' AS component,
-    'support' as id,
+    $form_id as id,
     '' as validate;
 
 SELECT
@@ -36,57 +41,42 @@ SELECT
     $t->>'support'->>'name' AS label,
     $record->>'name' AS value,
     TRUE AS required;
+
 SELECT
     'sign' AS name,
+    $t->>'support'->>'sign' AS label,
     $record->>'sign' AS value,
     'select' AS type,
-    '[{"label": "-", "value": "-"}, {"label": "+", "value": "+"}]'
-            AS options;
+    $options AS options;
 
-
--- ACTION BUTTONS
-
-SET action_link = CONCAT(
-    'supports_actions?no=', $no,
-    '&id=', $id,
-    '&action=', $action);
-SET return_link = CONCAT(
-    'index?no=', $no);
+-- BUTTONS FORM
 
 SELECT 'dynamic' AS component,
-    sqlpage.run_sql('form_buttons.sql',
-        json_object(
-            't', $t,
-            'form_name', 'support',
-            'action_link', $action_link,
-            'action', $action,
-            'return_link', $return_link)) AS properties;
+    sqlpage.run_sql('buttons_form.sql') AS properties;
 
--- TABLE
+-- TABLE OF SUPPORTS
 
 SET actions = format(
     "[✎](index?no=%s&id=%s&action=update '%s') &nbsp;
      [✘](index?no=%s&id=%s&action=delete '%s')",
-     $no, '%s', CONCAT($t->>'edit','…'),
-     $no, '%s', CONCAT($t->>'delete','…')
+     $no, '%s', CONCAT($t->'actions'->>'edit','…'),
+     $no, '%s', CONCAT($t->'actions'->>'delete','…')
      );
 
 SELECT 
     'table'             AS component,
-    json_array(
-        $t->'support'->>'name',
-        $t->'support'->>'sign',
-        $t->'action')   AS col_labels,
-    'action'            AS markdown,
-    'action'            AS align_center,
+    $t->>'action'       AS markdown,
+    $t->>'action'       AS align_center,
     TRUE                AS sort,
     TRUE                AS freeze_headers,
-    TRUE                AS search,
+    $p->>'search_area'       AS search,
     $t->>'no_data'      AS empty_description,
-    $t->>'search'       AS search_placeholder;
+    $t->>'search' || '…' AS search_placeholder;
     
-SELECT
-    name,
-    sign,
-    format($actions, id, id, id) AS action
+SELECT 'dynamic' AS component,
+    json_group_array(json_object(
+    $t->'support'->>'name', name,
+    $t->'support'->>'sign', sign,
+    $t->>'action', format($actions, id, id, id)
+     )) AS properties
 FROM supports;

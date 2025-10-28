@@ -1,4 +1,4 @@
--- SUPPORTS ACTIONS
+-- TABLE SUPPORTS ACTIONS
 
 SET return_link = "index?no=" || $no;
 
@@ -7,7 +7,7 @@ SET return_link = "index?no=" || $no;
 INSERT OR REPLACE
 INTO supports(id, name, sign)
 SELECT
-    (case when $id='' then NULL else $id end),
+    CASE WHEN $id='' THEN NULL ELSE $id END,
     :name,
     :sign
 WHERE $action = 'create' OR $action='update'

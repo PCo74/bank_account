@@ -1,19 +1,18 @@
--- CREATE / UPDATE / DELETE / VALIDATE / INVALIDATE / PURGE
+-- TABLE MVTS ACTIONS
 
 SET return_link = "index?no=" || $no;
 
 -- CREATE/UPDATE
 
-SET sign = (SELECT sign FROM supports WHERE id = $support_id);
+SET sign = SELECT sign FROM supports WHERE id = $support_id;
 
 INSERT OR REPLACE
 INTO mvts(id, performed, label, amount, support_id)
 SELECT
-    (case when $id='' then NULL else $id end),
+    CASE WHEN $id='' THEN NULL ELSE $id END,
     :performed,
     :label,
     $sign || ABS(:amount),
-    --IIF(:amount > 0 AND $sign = '-', -:amount, :amount),
     :support_id
 WHERE $action = 'create' OR $action='update'
 RETURNING 'redirect' AS component, $return_link AS link;
@@ -30,7 +29,7 @@ UPDATE mvts
 SET
     validated = NULL
 WHERE id = $id and $action = 'invalidate'
-RETURNING 'redirect' AS component, $return_link AS link
+RETURNING 'redirect' AS component, "index?no=0" AS link
 
 -- VALIDATE
 
@@ -41,21 +40,24 @@ SET
 WHERE id = $id and $action = 'validate'
 RETURNING 'redirect' AS component, $return_link AS link
 
--- PURGE (TODO transaction ?)
+-- DELETE PURGE (TODO transaction ?)
 
 UPDATE parameters
 SET report = report + (
     SELECT IFNULL(sum(amount), 0)
     FROM mvts
-    WHERE $action = 'purge'
+    WHERE $action = 'delete_purge'
         AND validated IS NOT NULL 
         AND validated < $purge_date
     );
 DELETE FROM mvts
-WHERE $action = 'purge'
+WHERE $action = 'delete_purge'
     AND validated IS NOT NULL
     AND validated < $purge_date
 RETURNING 'redirect' AS component, $return_link AS link;
+-- redirect after empty purge !
+SELECT 'redirect' AS component, $return_link AS link
+WHERE $action = 'delete_purge';
 
 -- ERROR
 

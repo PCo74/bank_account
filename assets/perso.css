@@ -7,3 +7,21 @@
     margin-left: auto; 
     margin-right: 0;
 }
+
+#balance .card {
+    --tblr-card-spacer-y: 0.2rem;
+    --tblr-card-spacer-x: 0.2rem;
+}
+
+#balance .h1{
+    margin-left: auto; 
+    margin-right: 0;
+}
+
+form fieldset.form-fieldset {
+    padding: 0.1rem 0.8rem !important;
+}
+
+.hidden {
+    display: none !important;
+}   
