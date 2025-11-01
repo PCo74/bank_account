@@ -26,26 +26,21 @@ SET menu_items = json_set($menu_items, '$[' || $no|| '].active', true);
 -- SHELL
 
 SELECT 
-    'shell'             AS component,
-    -- bank illustration change !
-    'assets/bank.jpg'   AS image,
-    'assets/bank.ico'   AS favicon,
+    'shell'                 AS component,
+    -- bank illustration
+    'assets/bank.jpg'       AS image,
+    'assets/bank.ico'       AS favicon,
     -- choice of the 'dark' theme or not
-    IIF($p->>'dark_theme', 'dark', '')   AS theme,
-    'fluid'            AS layout,
-
-    -- BUG ?
-    -- 'rechercher fr' as search_button,
-    -- 'rechercher fr' as search_placeholder,
-
-    $t->>'app_title'    AS title,
-    "/"                 AS link,
-    "/assets/perso.css" AS css,
-    -- "/assets/perso.js"  AS javascript, -- no longer useful
-    $t->>'language'     AS language,
-    JSON($menu_items)   AS menu_item,
+    IIF($p->>'dark_theme', 'dark', '')
+                            AS theme,
+    'fluid'                 AS layout,
+    $t->>'app_title'        AS title,
+    "/"                     AS link,
+    "/assets/perso.css"     AS css,
+    $t->>'language'         AS language,
+    JSON($menu_items)       AS menu_item,
     "©PCo2025 with [SQLPage](https://sql-page.com)" 
-                        AS footer;
+                            AS footer;
 
 -- DISPLAY BALANCES AND LAST STATEMENT DATE
 

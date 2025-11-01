@@ -32,22 +32,22 @@ SET options =
 -- FORM
 
 SELECT
-    'form' AS component,
-    $form_id as id,
-    '' as validate;
+    'form'                  AS component,
+    $form_id                AS id,
+    ''                      AS validate;
 
 SELECT
-    'name' AS name,
+    'name'                  AS name,
     $t->>'support'->>'name' AS label,
-    $record->>'name' AS value,
-    TRUE AS required;
+    $record->>'name'        AS value,
+    TRUE                    AS required;
 
 SELECT
-    'sign' AS name,
+    'sign'                  AS name,
     $t->>'support'->>'sign' AS label,
-    $record->>'sign' AS value,
-    'select' AS type,
-    $options AS options;
+    $record->>'sign'        AS value,
+    'select'                AS type,
+    $options                AS options;
 
 -- BUTTONS FORM
 
@@ -64,14 +64,14 @@ SET actions = format(
      );
 
 SELECT 
-    'table'             AS component,
-    $t->>'action'       AS markdown,
-    $t->>'action'       AS align_center,
-    TRUE                AS sort,
-    TRUE                AS freeze_headers,
-    $p->>'search_area'       AS search,
-    $t->>'no_data'      AS empty_description,
-    $t->>'search' || '…' AS search_placeholder;
+    'table'                 AS component,
+    $t->>'action'           AS markdown,
+    $t->>'action'           AS align_center,
+    TRUE                    AS sort,
+    TRUE                    AS freeze_headers,
+    $p->>'search_area'      AS search,
+    $t->>'no_data'          AS empty_description,
+    $t->>'search' || '…'    AS search_placeholder;
     
 SELECT 'dynamic' AS component,
     json_group_array(json_object(

@@ -11,12 +11,8 @@
   * @parent {str} $more_action : additional action parameters
  */
 
-
-
 -- DATA SETUP
 
--- translation texts for actions
-SET ta = $t->>'actions';
 -- button styles for actions
 SET cbs = $c->>'button_styles';
 -- action link
@@ -35,17 +31,14 @@ SELECT
     'form-buttons'                  AS class;
 
 SELECT
-    $ta->>$action                   AS title,
+    $t->'actions'->>$action         AS title,
     $action_link                    AS link,
     $cbs->$action->>'color'         AS color,
     $cbs->$action->>'icon'          AS icon,
     $form_id                        AS form;
 
 SELECT
-    $ta->>'cancel'                  AS title, 
+    $t->'actions'->>'cancel'        AS title, 
     'index?no=' || $no              AS link,
     $cbs->'cancel'->>'color'        AS color,
     $cbs->'cancel'->>'icon'         AS icon;
-
---SELECT 'dynamic' AS component,
-  --  sqlpage.run_sql('error.sql') AS properties;

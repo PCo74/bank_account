@@ -1,10 +1,7 @@
--- FORM DATA
+-- DATA SETUP
 
---SELECT 'dynamic' AS component, sqlpage.run_sql('error.sql') AS properties;
-
-
---SET id = IFNULL($id, '');
-SET mc = $c->'money_colors';
+SET debit = $c->'money_colors'->>'debit';
+SET credit = $c->'money_colors'->>'credit';
 
 SET action = IIF($action IN ('create', 'update', 'delete'),
              $action, 'create');
@@ -70,7 +67,7 @@ FROM supports;
 SELECT 'dynamic' AS component,
     sqlpage.run_sql('buttons_form.sql') AS properties;
 
--- TABLE MVTS
+-- TABLE MVTS PENDING
 
 SET actions = format(
     "[✎](?no=0&id=%s&action=update '%s') &nbsp;
@@ -80,18 +77,8 @@ SET actions = format(
      '%s', CONCAT($t->'actions'->>'delete','…'),
      '%s', $t->>'actions'->>'validate');
 
-SELECT 
-    'table' AS component,
-    TRUE AS small,
-    $t->>'action' AS markdown,
-    $t->'mvt'->>'amount' AS align_right,
-    $t->'mvt'->>'support_id' AS align_center,
-    $t->>'action' AS align_center,
-    TRUE AS sort,
-    TRUE AS freeze_headers,
-    $p->>'search_area' AS search,
-    $t->>'no_data' AS empty_description,
-    $t->>'search' || '…' AS search_placeholder;
+SELECT 'dynamic' AS component,
+    sqlpage.run_sql('top_level_table_for_mvts.sql') AS properties;
 
 SELECT 'dynamic' AS component,
     json_group_array(json_object(
@@ -100,6 +87,6 @@ SELECT 'dynamic' AS component,
     $t->'mvt'->>'amount', money,
     $t->'mvt'->>'support_id', name,
     $t->>'action', format($actions, id, id, id),
-    '_sqlpage_color', IIF(amount < 0, $mc->>'debit', $mc->>'credit')
+    '_sqlpage_color', IIF(amount < 0, $debit, $credit)
     )) AS properties
 FROM mvts_supports_pending;

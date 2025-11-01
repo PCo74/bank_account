@@ -11,7 +11,8 @@
   - `sqlite` 🌐 https://www.sqlite.org/download.html
   - `Sqlpage` 🌐 https://github.com/sqlpage/SQLPage#get-started
 
-- 
+- télécharger l'archive compressée et la décompresser
+- lancer le fichier de commande correspondant à votre système
 
 ## Fonctionnalités
 
@@ -98,3 +99,5 @@ Les textes pour l'interface sont stockés dans le fichier
 ⮑ Modifier l'image à afficher à côté du nom de la banque
 
 </details>
+
+©PCo-2025
