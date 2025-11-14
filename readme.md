@@ -11,14 +11,14 @@
   - `sqlite` 🌐 https://www.sqlite.org/download.html
   - `Sqlpage` 🌐 https://github.com/sqlpage/SQLPage#get-started
 
-- télécharger l'archive compressée et la décompresser
-- lancer le fichier de commande correspondant à votre système
+- télécharger l'archive et la décompresser
+- lancer le serveur **SqlPage** selon votre système
 
 ## Fonctionnalités
 
-1. saisir les mouvements réalisés `(date, libellé, montant, support)`
-2. valider les mouvements lors de la réception d'un relevé bancaire
-3. purger (éventuellement) les mouvements anciens !
+1. Saisir les mouvements réalisés `(date, libellé, montant, support)`
+2. Valider les mouvements lors de la réception d'un relevé bancaire
+3. Purger (éventuellement) les mouvements anciens !
 
 ## Localisation
 
@@ -28,7 +28,7 @@
 
 ### 2 fonctions utilisées :
   - `format` pour formater un réel en une valeur monétaire (au format US !)
-  - double `replace` pour la représentation locale (séparateur de milliers et séparateur décimal)
+  - double `replace` pour la représentation locale (séparateur des milliers et séparateur décimal)
 
 | devise | formule | résultat |
 | ------ | ------- | -------- |
@@ -39,6 +39,12 @@
 \* formule simplifiée pour le format «*US*» = `format('$ %,.2f', 1234.5)`
 
 ⮑ Modifier les fichiers suivants en remplaçant les ❓ par les valeurs adéquates :
+
+| position du ❓| valeur |
+| ------------- | ------ | 
+| premier       | format(`%,.2f`) avec devise [`$`,`£`, ...] |
+| deuxième      | séparateur des milliers [`.`, ` `, ...] |
+| troisième     | séparateur décimal [`,`, `.`, ...] |
 
 🗄 `sqlpage/migrations/003_create_mvts.sql`
 ```sql
